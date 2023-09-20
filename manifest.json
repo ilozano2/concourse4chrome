@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Concourse Minion 🧑‍🚀",
+    "version": "0.2",
+    "description": "Add some useful things to concourse UI",
+    "icons": {
+        "16": "images/airplane-16.png",
+        "32": "images/airplane-32.png",
+        "128": "images/airplane-128.png"
+    },
+    "run_at": "document_end",
+    "content_scripts": [
+        {
+          "js": ["scripts/content.js"],
+          "matches": [
+            "https://runway-ci-sfo.eng.vmware.com/*"
+          ]
+        }
+      ]
+  }
