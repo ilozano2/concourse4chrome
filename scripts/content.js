@@ -110,7 +110,22 @@ function _findBuildId() {
 }
 
 function _buildCommand(targetGroup, pipelineName, varsList, jobName, buildNumber) {
-  'fly -t ' + targetGroup + ' hijack -j ' + pipelineName + '/' + varsList.join(',') + '/' + jobName + ' -b ' + buildNumber;
+  return 'fly -t ' + targetGroup + ' hijack -j ' + pipelineName + '/' + varsList.join(',') + '/' + jobName + ' -b ' + buildNumber;
+}
+
+function _addCopyLogins() {
+  var leftIconAtRight = document.querySelector('.build-header div:nth-child(2)')
+  if (leftIconAtRight) {
+    var host = window.location.host;
+    var button = document.createElement('button');
+    button.append(document.createTextNode('Logins'));
+    leftIconAtRight.insertAdjacentElement('afterbegin', button);
+
+    var targetGroup = _findInstanceGroupName();
+    button.onclick = function(ev) {
+      navigator.clipboard.writeText('fly login -t ' + targetGroup + ' -c ' + host + ' -n HOSTNAME');
+    } 
+  }
 }
 
 function _addCommandToSteps(flyCmd) {
