@@ -122,7 +122,15 @@ function _findBuildId() {
 }
 
 function _buildCommand(targetGroup, pipelineName, varsList, jobName, buildNumber) {
-  return 'fly -t ' + targetGroup + ' hijack -j ' + pipelineName + '/' + varsList.join(',') + '/' + jobName + ' -b ' + buildNumber;
+  var cmd = 'fly -t ' + targetGroup + ' hijack -j ' + pipelineName;
+  
+  if (varsList && varsList.length) {
+    cmd += '/' + varsList.join(',');
+  }
+  
+  cmd += '/' + jobName + ' -b ' + buildNumber;
+
+  return cmd;
 }
 
 function _addCopyLogins() {
