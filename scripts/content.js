@@ -1,3 +1,7 @@
+var State = {
+  steps: document.querySelectorAll('.build-step')
+};
+
 _tryInit();
 
 function _initConcourseExtension() {
@@ -27,6 +31,9 @@ function _tryInit() {
       _tryInit();
     } else {
       _initConcourseExtension();
+      setTimeout(function () {
+        _tryInit();
+      }, 2000);
     }
   }, 5000);
 }
@@ -35,18 +42,23 @@ function _tryInit() {
 /********** Auxiliary functions ************/
 /*******************************************/
 
+function _areNewStepsAdded() {
+  var oldSteps = State.steps;
+  State.steps = document.querySelectorAll('.build-step');
+
+  return State.steps.length > oldSteps.length;
+}
+
 function _isLoading() {
   const headers = document.querySelectorAll('.build-step .header:not(.loading-header)');
   return !headers;
 }
 
 function _findInstanceGroupName() {
-  var instanceGroup = document.querySelector('#breadcrumb-instance-group');
-  if (instanceGroup) {
-    targetGroup = instanceGroup.innerText.replaceAll(/.*\n/g, '');
-  }
+  var path = window.location.pathname;
+  var groupNameMatch = path.match(/\/teams\/([^\/]+)\/.*/);
 
-  return targetGroup;
+  return groupNameMatch && groupNameMatch.length > 1 ? groupNameMatch[1] : 'your-target-group';
 }
 
 function _findPipelineName() {
@@ -66,7 +78,7 @@ function _findListOfVars() {
   if (pipelineElement) {
     var pipelineUri = decodeURI(pipelineElement.href).replaceAll(/.*\?/g, '')
     pipelineName = decodeURI(pipelineElement.href).replaceAll(/^.*pipelines\//g,'').replaceAll(/\?.*$/g, '');
-    var vars = pipelineUri.split('&')
+    var vars = pipelineUri.search('&') == -1 ? [] : pipelineUri.split('&');
     for (i in vars) {
       if (vars[i]) {
         var varName = vars[i].replaceAll('vars.', '').replaceAll(/=.*$/g, '');
@@ -142,9 +154,15 @@ function _addCommandToSteps(flyCmd) {
     if (taskHeader && taskHeader.startsWith('task')) {
       var taskName = step.children[0].querySelector('div h3').textContent;
       var taskActions = step.children[0].children[1];
+
+      var anyPreviousAction = taskActions.querySelector('.extension-action');
+      if (anyPreviousAction) {
+        continue;
+      }
   
       (function(pTaskActions, pFlyCmd, pTaskName) {
         const action = document.createElement("a");
+        action.className = "extension-action";
         const actionContainer = document.createElement("h3");
         actionContainer.appendChild(action);
         action.textContent = `🪂`;
