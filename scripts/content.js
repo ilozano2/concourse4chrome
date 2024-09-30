@@ -4,6 +4,62 @@ var State = {
 
 _tryInit();
 
+
+
+function _pauseVisibleJobs() {
+  document.querySelectorAll('.node.job').forEach((key) => { 
+    var token=localStorage.getItem('csrf_token').replaceAll("\"", "");    
+        console.log(key.textContent); 
+        var tryout = new XMLHttpRequest();
+    
+    tryout.open("PUT", '/api/v1' + window.location.pathname + '/jobs/' + key.textContent + '/pause' + window.location.search);
+    tryout.withCredentials = true;
+    tryout.setRequestHeader("x-csrf-token", token);
+    tryout.send()
+    });
+}
+
+function _addPauseVisibleJobsButton() {
+  if(document.querySelector('.node.job') && !document.querySelector('#pause-button')) {
+    const pauseButton = document.createElement("div")
+    pauseButton.id="pause-button";
+    pauseButton.style='border-left: 1px solid rgb(61, 60, 60); background-color: rgb(21, 21, 21); width: 40px; padding-top: 20px; padding-left: 25px;cursor: pointer;';
+    pauseButton.textContent='🪂';
+
+    document.querySelector('#top-bar-app').insertAdjacentElement("beforeend", pauseButton);
+    pauseButton.onclick = function(ev) {
+      _pauseVisibleJobs();
+    }
+  }
+}
+
+function _unpauseVisibleJobs() {
+  document.querySelectorAll('.node.job').forEach((key) => { 
+    var token=localStorage.getItem('csrf_token').replaceAll("\"", "");    
+        console.log(key.textContent); 
+        var tryout = new XMLHttpRequest();
+    
+    tryout.open("PUT", '/api/v1' + window.location.pathname + '/jobs/' + key.textContent + '/unpause' + window.location.search);
+    tryout.withCredentials = true;
+    tryout.setRequestHeader("x-csrf-token", token);
+    tryout.send()
+    });
+}
+
+function _addUnPauseVisibleJobsButton() {
+  if(document.querySelector('.node.job') && !document.querySelector('#unpause-button')) {
+    const unpauseButton = document.createElement("div");
+    unpauseButton.id="unpause-button";
+    unpauseButton.style='border-left: 1px solid rgb(61, 60, 60); background-color: greenyellow; width: 40px; padding-top: 20px; padding-left: 25px;cursor: pointer;';
+    unpauseButton.textContent='🪂';
+
+    document.querySelector('#top-bar-app').insertAdjacentElement("beforeend", unpauseButton);
+    unpauseButton.onclick = function(ev) {
+      _unpauseVisibleJobs();
+    }
+  }
+}
+
 function _initConcourseExtension() {
   console.log('Starting Concourse extension');
 
@@ -17,6 +73,8 @@ function _initConcourseExtension() {
   var flyCmd = _buildCommand(targetGroup, pipelineName, varsList, jobName, buildNumber);
   console.log(flyCmd);
   
+  _addPauseVisibleJobsButton();
+  _addUnPauseVisibleJobsButton();
   _addCommandToSteps(flyCmd);
 }
 

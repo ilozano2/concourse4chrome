@@ -13,6 +13,7 @@
         {
           "js": ["scripts/content.js"],
           "matches": [
+            "https://tpe-concourse-rock.eng.vmware.com/*",
             "https://runway-ci-sfo.eng.vmware.com/*"
           ]
         }
